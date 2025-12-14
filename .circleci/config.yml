@@ -28,7 +28,7 @@ jobs:
             # to multi-arch build so we dont include HOUR in tag name
             DATESTR=`date '+%Y%m%d'`
             echo 'export DOCKER_TAG="${DATESTR}${DOCKER_TAG_SUFFIX}"' >> "$BASH_ENV"
-            echo 'export DOCKER_TAG_LATEST="latest${DOCKER_TAG_SUFFIX}"' >> "$BASH_ENV"
+            echo 'export DOCKER_TAG_LATEST="latest"' >> "$BASH_ENV"
             echo 'export DOCKERHUB_IMAGENAME="yakumosaki/docker-multiarch-test"' >> "$BASH_ENV"
       - checkout
       - run: ls -l
@@ -37,7 +37,7 @@ jobs:
           command: |
             ARCH=`uname -m`
             echo $ARCH
-            docker buildx build --platform ${DOCKER_PLATFORM} -t $DOCKERHUB_IMAGENAME:$DOCKER_TAG .
+            docker buildx build --platform ${DOCKER_PLATFORM} -t $DOCKERHUB_IMAGENAME:$DOCKER_TAG . --push
             docker tag $DOCKERHUB_IMAGENAME:$DOCKER_TAG $DOCKERHUB_IMAGENAME:$DOCKER_TAG_LATEST
       - run:
           name: "Push"
@@ -69,7 +69,7 @@ jobs:
             # to multi-arch build so we dont include HOUR in tag name
             DATESTR=`date '+%Y%m%d'`
             echo 'export DOCKER_TAG="${DATESTR}${DOCKER_TAG_SUFFIX}"' >> "$BASH_ENV"
-            echo 'export DOCKER_TAG_LATEST="latest${DOCKER_TAG_SUFFIX}"' >> "$BASH_ENV"
+            echo 'export DOCKER_TAG_LATEST="latest"' >> "$BASH_ENV"
             echo 'export DOCKERHUB_IMAGENAME="yakumosaki/docker-multiarch-test"' >> "$BASH_ENV"
 
       - checkout
@@ -79,7 +79,7 @@ jobs:
           command: |
             ARCH=`uname -m`
             echo $ARCH
-            docker buildx build --platform ${DOCKER_PLATFORM} -t $DOCKERHUB_IMAGENAME:$DOCKER_TAG .
+            docker buildx build --platform ${DOCKER_PLATFORM} -t $DOCKERHUB_IMAGENAME:$DOCKER_TAG . --push
             docker tag $DOCKERHUB_IMAGENAME:$DOCKER_TAG $DOCKERHUB_IMAGENAME:$DOCKER_TAG_LATEST
       - run:
           name: "Push"
