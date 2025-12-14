@@ -26,7 +26,47 @@ jobs:
           command: |
             # to multi-arch build so we dont include HOUR in tag name
             DATESTR=`date '+%Y%m%d'
-            echo "export DOCKER_TAG=${DATESTR}_arm64" >> "$BASH_ENV"
+            echo 'export DOCKER_TAG="${DATESTR}_arm64"' >> "$BASH_ENV"
+            echo 'export DOCKERHUB_IMAGENAME="yakumosaki/docker-multiarch-test"' >> "$BASH_ENV"
+      - checkout
+      - run: ls -l
+      - run:
+          name: "Build"
+          command: |
+            ARCH=`uname -m`
+            cd $ARCH
+            docker buildx create --use --name builder node-arm64
+            docker buildx build --platform linux/arm64 -t $DOCKERHUB_IMAGENAME:$DOCKER_TAG .
+            docker tag $DOCKERHUB_IMAGENAME:$DOCKER_TAG $DOCKERHUB_IMAGENAME:latest-arm64
+      - run:
+          name: "Push"
+          command: |
+            docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
+            docker push $DOCKERHUB_IMAGENAME:$DOCKER_TAG
+            docker push $DOCKERHUB_IMAGENAME:latest-arm64
+
+  build-image-amd64:
+    # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
+    # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
+    machine:
+      image: ubuntu-2204:current
+      docker_layer_caching: true
+    resource_class: medium
+
+    environment:
+      TZ: "Asia/Tokyo"
+
+    # See: https://circleci.com/docs/2.0/configuration-reference/#steps
+    steps:
+      - run:
+          name: "Test dockerhub login"
+          command: docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
+      - run:
+          name: "Determine tag name"
+          command: |
+            # to multi-arch build so we dont include HOUR in tag name
+            DATESTR=`date '+%Y%m%d'
+            echo 'export DOCKER_TAG="${DATESTR}_arm64"' >> "$BASH_ENV"
             echo 'export DOCKERHUB_IMAGENAME="yakumosaki/docker-multiarch-test"' >> "$BASH_ENV"
       - checkout
       - run: ls -l
@@ -52,3 +92,6 @@ workflows:
     jobs:
       - build-image-arm64:
           context: DOCKER_USER
+      - build-image-amd64:
+          context: DOCKER_USER
+        
