@@ -34,7 +34,7 @@ jobs:
           name: "Build"
           command: |
             ARCH=`uname -m`
-            cd $ARCH
+            echo $ARCH
             docker buildx create --use --name builder node-arm64
             docker buildx build --platform linux/arm64 -t $DOCKERHUB_IMAGENAME:$DOCKER_TAG .
             docker tag $DOCKERHUB_IMAGENAME:$DOCKER_TAG $DOCKERHUB_IMAGENAME:latest-arm64
@@ -74,7 +74,7 @@ jobs:
           name: "Build"
           command: |
             ARCH=`uname -m`
-            cd $ARCH
+            echo $ARCH
             docker buildx create --use --name builder node-arm64
             docker buildx build --platform linux/arm64 -t $DOCKERHUB_IMAGENAME:$DOCKER_TAG .
             docker tag $DOCKERHUB_IMAGENAME:$DOCKER_TAG $DOCKERHUB_IMAGENAME:latest-arm64
