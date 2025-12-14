@@ -25,7 +25,7 @@ jobs:
           name: "Determine tag name"
           command: |
             # to multi-arch build so we dont include HOUR in tag name
-            DATESTR=`date '+%Y%m%d'
+            DATESTR=`date '+%Y%m%d'`
             echo 'export DOCKER_TAG="${DATESTR}_arm64"' >> "$BASH_ENV"
             echo 'export DOCKERHUB_IMAGENAME="yakumosaki/docker-multiarch-test"' >> "$BASH_ENV"
       - checkout
@@ -65,7 +65,7 @@ jobs:
           name: "Determine tag name"
           command: |
             # to multi-arch build so we dont include HOUR in tag name
-            DATESTR=`date '+%Y%m%d'
+            DATESTR=`date '+%Y%m%d'`
             echo 'export DOCKER_TAG="${DATESTR}_arm64"' >> "$BASH_ENV"
             echo 'export DOCKERHUB_IMAGENAME="yakumosaki/docker-multiarch-test"' >> "$BASH_ENV"
       - checkout
