@@ -37,13 +37,15 @@ jobs:
           command: |
             ARCH=`uname -m`
             echo $ARCH
+            docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
+
             docker buildx build --platform ${DOCKER_PLATFORM} -t $DOCKERHUB_IMAGENAME:$DOCKER_TAG . --push
             docker tag $DOCKERHUB_IMAGENAME:$DOCKER_TAG $DOCKERHUB_IMAGENAME:$DOCKER_TAG_LATEST
       - run:
           name: "Push"
           command: |
             docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
-            docker push $DOCKERHUB_IMAGENAME:$DOCKER_TAG
+            #docker push $DOCKERHUB_IMAGENAME:$DOCKER_TAG
             docker push $DOCKERHUB_IMAGENAME:$DOCKER_TAG_LATEST
 
   build-image-amd64:
@@ -79,13 +81,15 @@ jobs:
           command: |
             ARCH=`uname -m`
             echo $ARCH
+            docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
+
             docker buildx build --platform ${DOCKER_PLATFORM} -t $DOCKERHUB_IMAGENAME:$DOCKER_TAG . --push
             docker tag $DOCKERHUB_IMAGENAME:$DOCKER_TAG $DOCKERHUB_IMAGENAME:$DOCKER_TAG_LATEST
       - run:
           name: "Push"
           command: |
             docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
-            docker push $DOCKERHUB_IMAGENAME:$DOCKER_TAG
+            #docker push $DOCKERHUB_IMAGENAME:$DOCKER_TAG
             docker push $DOCKERHUB_IMAGENAME:$DOCKER_TAG_LATEST
 
 # Invoke jobs via workflows
