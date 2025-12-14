@@ -26,8 +26,7 @@ jobs:
             echo 'export DOCKER_PLATFORM="linux/arm64"' >> "$BASH_ENV"
 
             # to multi-arch build so we dont include HOUR in tag name
-            DATESTR=`date '+%Y%m%d'`
-            echo 'export DOCKER_TAG="${DATESTR}${DOCKER_TAG_SUFFIX}"' >> "$BASH_ENV"
+            echo 'export DOCKER_TAG="`date '+%Y%m%d'`${DOCKER_TAG_SUFFIX}"' >> "$BASH_ENV"
             echo 'export DOCKER_TAG_LATEST="latest"' >> "$BASH_ENV"
             echo 'export DOCKERHUB_IMAGENAME="yakumosaki/docker-multiarch-test"' >> "$BASH_ENV"
       - checkout
@@ -69,8 +68,7 @@ jobs:
             echo 'export DOCKER_PLATFORM="linux/amd64"' >> "$BASH_ENV"
 
             # to multi-arch build so we dont include HOUR in tag name
-            DATESTR=`date '+%Y%m%d'`
-            echo 'export DOCKER_TAG="${DATESTR}${DOCKER_TAG_SUFFIX}"' >> "$BASH_ENV"
+            echo 'export DOCKER_TAG="`date '+%Y%m%d'`${DOCKER_TAG_SUFFIX}"' >> "$BASH_ENV"
             echo 'export DOCKER_TAG_LATEST="latest"' >> "$BASH_ENV"
             echo 'export DOCKERHUB_IMAGENAME="yakumosaki/docker-multiarch-test"' >> "$BASH_ENV"
 
@@ -92,6 +90,25 @@ jobs:
             #docker push $DOCKERHUB_IMAGENAME:$DOCKER_TAG
             docker push $DOCKERHUB_IMAGENAME:$DOCKER_TAG_LATEST
 
+  push-latest-tag:
+    machine:
+      image: ubuntu-2204:current
+      docker_layer_caching: true
+    resource_class: medium
+
+    environment:
+      TZ: "Asia/Tokyo"
+
+    steps:
+      - run:
+          name: "latest"
+          command: |
+            docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
+            docker manifest create yakumosaki/docker-multiarch-test:latest \
+                                  yakumosaki/docker-multiarch-test:latest_arm64 \
+                                  yakumosaki/docker-multiarch-test:latest_amd64
+            docker manifest push yakumosaki/docker-multiarch-test:latest
+
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
@@ -100,5 +117,10 @@ workflows:
       - build-image-arm64:
           context: DOCKER_USER
       - build-image-amd64:
+          context: DOCKER_USER
+      - push-latest-tag:
+          requires:
+            - build-image-arm64
+            - build-image-amd64
           context: DOCKER_USER
         
